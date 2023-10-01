@@ -1,0 +1,24 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+<%_ if (uiLibrary === 'mui') { _%>
+import { ThemeProvider } from '@mui/material/styles';
+import Button from './components/ui/button'
+import theme from './theme'; // Import your MUI theme file
+<%_ } _%>
+import './index.css';
+
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement
+);
+root.render(
+  <React.StrictMode>
+    <%_ if (uiLibrary === 'mui') { _%>
+    <ThemeProvider theme={theme}>
+    <%_ } _%>
+    <App />
+    <%_ if (uiLibrary === 'mui') { _%>
+    </ThemeProvider>
+    <%_ } _%>
+  </React.StrictMode>
+);
