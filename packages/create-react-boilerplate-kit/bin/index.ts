@@ -1,11 +1,34 @@
 #!/usr/bin/env node
 
 import { createWorkspace } from 'create-nx-workspace';
+import { prompt } from 'enquirer';
 
 async function main() {
-  const name = process.argv[2]; // TODO: use libraries like yargs or enquirer to set your workspace name
+  let name = process.argv[2]; // TODO: use libraries like yargs or enquirer to set your workspace name
   if (!name) {
-    throw new Error('Please provide a name for the workspace');
+    // throw new Error('Please provide a name for the workspace');
+    const response = await prompt<{ name: string }>({
+      type: 'input',
+      name: 'name',
+      message: 'What is the name of the app?',
+    });
+    name = response.name;
+  }
+  let uiLibrary = process.argv[3];
+  if (!uiLibrary) {
+    uiLibrary = (
+      await prompt<{ uiLibrary: 'mui' | 'antd' | 'none' }>({
+        name: 'uiLibrary',
+        message: 'Which UI Library do you want to use?',
+        initial: 'none' as any,
+        type: 'autocomplete',
+        choices: [
+          { name: 'mui', message: 'Material UI' },
+          { name: 'antd', message: 'Ant Design' },
+          { name: 'none', message: 'None' },
+        ],
+      })
+    ).uiLibrary;
   }
 
   console.log(`Creating the workspace: ${name}`);
@@ -21,6 +44,7 @@ async function main() {
       name,
       nxCloud: false,
       packageManager: 'npm',
+      uiLibrary,
     }
   );
 
