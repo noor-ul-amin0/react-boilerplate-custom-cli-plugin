@@ -1,0 +1,13 @@
+{
+  "name": "create-react-boilerplate-kit",
+  "version": "0.0.1",
+  "dependencies": {
+    "create-nx-workspace": "16.9.1"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts",
+  "bin": {
+    "create-react-boilerplate-kit": "./bin/index.js"
+  }
+}
