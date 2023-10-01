@@ -8,6 +8,7 @@
     "@nx/devkit": "16.9.1",
     "@swc/helpers": "~0.5.2",
     "create-nx-workspace": "16.9.1",
+    "enquirer": "^2.4.1",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
