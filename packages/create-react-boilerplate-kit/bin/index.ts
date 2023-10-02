@@ -8,12 +8,14 @@ async function main() {
   if (!name) {
     // throw new Error('Please provide a name for the workspace');
     const response = await prompt<{ name: string }>({
+      required: true,
       type: 'input',
       name: 'name',
       message: 'What is the name of the application?',
     });
     name = response.name;
   }
+
   let uiLibrary = process.argv[3];
   if (!uiLibrary) {
     uiLibrary = (
@@ -30,6 +32,7 @@ async function main() {
       })
     ).uiLibrary;
   }
+
   const router = process.argv[4];
   let useReactRouter = true;
   if (!router) {
@@ -42,6 +45,19 @@ async function main() {
         initial: true,
       })
     ).useReactRouter;
+  }
+
+  const redux = process.argv[5];
+  let useRedux = true;
+  if (!redux) {
+    useRedux = (
+      await prompt<{ useRedux: boolean }>({
+        type: 'confirm',
+        name: 'useRedux',
+        message: 'Do you want to add Redux to your project? (Y/n)',
+        initial: true,
+      })
+    ).useRedux;
   }
 
   console.log(`Creating the workspace: ${name}`);
@@ -59,6 +75,7 @@ async function main() {
       packageManager: 'npm',
       uiLibrary,
       useReactRouter,
+      useRedux,
     }
   );
 
