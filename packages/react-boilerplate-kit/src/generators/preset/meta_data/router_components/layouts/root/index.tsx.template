@@ -1,0 +1,57 @@
+import React from 'react';
+import { Link, Outlet } from 'react-router-dom';
+<%_ if (uiLibrary === 'mui') { _%>
+import { AppBar, Tab, Tabs } from "@mui/material";
+
+export default function RooLayout() {
+  return (
+      <>
+      <AppBar position="static">
+        <Tabs>
+          <Tab sx={{ color: "whitesmoke" }} label="Home" component={Link} to="/" />
+          <Tab sx={{ color: "whitesmoke" }} label="About" component={Link} to="/about" />
+        </Tabs>
+      </AppBar>
+      <Outlet/>
+      </>
+  );
+}
+
+<%_ } else if (uiLibrary === 'antd') { _%>
+import { Menu, Layout } from 'antd';
+const { Item } = Menu;
+
+export default function RooLayout(){
+  return (
+   <Layout>
+        <Menu mode="horizontal">
+          <Item key="home">
+            <Link to="/">Home</Link>
+          </Item>
+          <Item key="about">
+            <Link to="/about">About</Link>
+          </Item>
+        </Menu>
+        <Outlet />
+    </Layout>
+  );
+};
+
+<%_ } else { _%>
+
+export default function RooLayout() {
+  return (
+    <div style={{ width: '100%', margin: 'auto' }}>
+      <div style={{ backgroundColor: '#3f51b5', color: 'white', display: 'flex }}>
+        <Link to="/" style={{ color: 'white', padding: '20px', textDecoration: 'none' }}>Home</Link>
+        <Link to="/about" style={{ color: 'white', padding: '20px', textDecoration: 'none' }}>About</Link>
+      </div>
+      <div>
+        <Outlet/>  
+      </div>
+    </div>
+  );
+}
+
+
+<%_ } _%>
