@@ -1,11 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+<%_ if (useReactRouter === true) { _%>
+import { BrowserRouter } from 'react-router-dom';
+<%_ } _%>
 <%_ if (uiLibrary === 'mui') { _%>
 import { ThemeProvider } from '@mui/material/styles';
 import Button from './components/ui/button'
 import theme from './theme'; // Import your MUI theme file
 <%_ } _%>
+import App from './App';
 import './index.css';
 
 const root = ReactDOM.createRoot(
@@ -13,12 +16,18 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
+    <%_ if (useReactRouter === true) { _%>
+    <BrowserRouter>
+    <%_ } _%>
     <%_ if (uiLibrary === 'mui') { _%>
     <ThemeProvider theme={theme}>
     <%_ } _%>
     <App />
     <%_ if (uiLibrary === 'mui') { _%>
     </ThemeProvider>
+    <%_ } _%>
+    <%_ if (useReactRouter === true) { _%>
+    </BrowserRouter>
     <%_ } _%>
   </React.StrictMode>
 );
