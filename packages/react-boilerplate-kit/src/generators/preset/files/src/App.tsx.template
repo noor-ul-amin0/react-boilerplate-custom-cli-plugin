@@ -1,10 +1,27 @@
 import React from "react";
-import "./App.css";
+<%_ if (useReactRouter === true) { _%>
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/home';
+import About from './pages/about';
+import RootLayout from './layouts/root';
+<%_ } _%>
+<%_ if (useReactRouter === false) { _%>
 import Button from "./components/ui/button";
+<%_ } _%>
+import "./App.css";
 
 const App = () => {
+
   return (
     <div className="App">
+      <%_ if (useReactRouter === true) { _%>
+      <Routes>
+          <Route element={ <RootLayout/> }>
+           <Route  path='/' element={ <Home/> } />
+           <Route  path='/about' element={ <About/> } />
+          </Route>
+      </Routes>
+      <%_ } else { _%>
       <header className="App-header">
         <svg
           className="App-logo"
@@ -28,6 +45,7 @@ const App = () => {
         </a>
         <Button text="Click Me" onClick={() => alert("Hello 👋")} />
       </header>
+      <%_ } _%>
     </div>
   );
 };
