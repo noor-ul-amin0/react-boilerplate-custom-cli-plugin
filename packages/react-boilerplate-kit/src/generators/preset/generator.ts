@@ -47,6 +47,22 @@ export async function presetGenerator(
       options
     );
   }
+  if (options.useRedux) {
+    addDependenciesToPackageJson(
+      tree,
+      {
+        'react-redux': await getLatestVersion('react-redux'),
+        '@reduxjs/toolkit': await getLatestVersion('@reduxjs/toolkit'),
+      },
+      {}
+    );
+    generateFiles(
+      tree,
+      path.join(__dirname, 'meta_data', 'redux_components'),
+      targetRoot,
+      options
+    );
+  }
   if (options.uiLibrary === 'antd') {
     addDependenciesToPackageJson(
       tree,
