@@ -32,7 +32,21 @@ export async function presetGenerator(
     ...options,
     tmpl: '.template',
   });
-
+  if (options.useReactRouter) {
+    addDependenciesToPackageJson(
+      tree,
+      {
+        'react-router-dom': await getLatestVersion('react-router-dom'),
+      },
+      {}
+    );
+    generateFiles(
+      tree,
+      path.join(__dirname, 'meta_data', 'router_components'),
+      targetRoot,
+      options
+    );
+  }
   if (options.uiLibrary === 'antd') {
     addDependenciesToPackageJson(
       tree,
@@ -43,7 +57,7 @@ export async function presetGenerator(
     );
     generateFiles(
       tree,
-      path.join(__dirname, 'meta_data', 'components', 'antd'),
+      path.join(__dirname, 'meta_data', 'ui_library_components', 'antd'),
       targetRoot,
       options
     );
@@ -59,14 +73,14 @@ export async function presetGenerator(
     );
     generateFiles(
       tree,
-      path.join(__dirname, 'meta_data', 'components', 'mui'),
+      path.join(__dirname, 'meta_data', 'ui_library_components', 'mui'),
       targetRoot,
       options
     );
   } else {
     generateFiles(
       tree,
-      path.join(__dirname, 'meta_data', 'components', 'css'),
+      path.join(__dirname, 'meta_data', 'ui_library_components', 'css'),
       targetRoot,
       options
     );
