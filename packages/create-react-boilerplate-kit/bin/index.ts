@@ -10,7 +10,7 @@ async function main() {
     const response = await prompt<{ name: string }>({
       type: 'input',
       name: 'name',
-      message: 'What is the name of the app?',
+      message: 'What is the name of the application?',
     });
     name = response.name;
   }
@@ -30,6 +30,19 @@ async function main() {
       })
     ).uiLibrary;
   }
+  const router = process.argv[4];
+  let useReactRouter = true;
+  if (!router) {
+    useReactRouter = (
+      await prompt<{ useReactRouter: boolean }>({
+        type: 'confirm',
+        name: 'useReactRouter',
+        message:
+          'Would you like to include React Router for handling navigation in your project? (Y/n)',
+        initial: true,
+      })
+    ).useReactRouter;
+  }
 
   console.log(`Creating the workspace: ${name}`);
 
@@ -45,6 +58,7 @@ async function main() {
       nxCloud: false,
       packageManager: 'npm',
       uiLibrary,
+      useReactRouter,
     }
   );
 
