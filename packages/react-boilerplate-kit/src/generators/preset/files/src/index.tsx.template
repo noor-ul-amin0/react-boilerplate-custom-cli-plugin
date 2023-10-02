@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom/client';
 <%_ if (useReactRouter === true) { _%>
 import { BrowserRouter } from 'react-router-dom';
 <%_ } _%>
+<%_ if (useRedux === true) { _%>
+import { Provider } from 'react-redux';
+import { store } from './app/store';
+<%_ } _%>
 <%_ if (uiLibrary === 'mui') { _%>
 import { ThemeProvider } from '@mui/material/styles';
 import Button from './components/ui/button'
@@ -19,12 +23,18 @@ root.render(
     <%_ if (useReactRouter === true) { _%>
     <BrowserRouter>
     <%_ } _%>
+    <%_ if (useRedux === true) { _%>
+    <Provider store={store}>
+    <%_ } _%>
     <%_ if (uiLibrary === 'mui') { _%>
     <ThemeProvider theme={theme}>
     <%_ } _%>
     <App />
     <%_ if (uiLibrary === 'mui') { _%>
     </ThemeProvider>
+    <%_ } _%>
+    <%_ if (useRedux === true) { _%>
+    </Provider>
     <%_ } _%>
     <%_ if (useReactRouter === true) { _%>
     </BrowserRouter>

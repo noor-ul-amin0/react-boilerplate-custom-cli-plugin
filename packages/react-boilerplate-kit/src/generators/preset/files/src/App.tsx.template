@@ -5,6 +5,9 @@ import Home from './pages/home';
 import About from './pages/about';
 import RootLayout from './layouts/root';
 <%_ } _%>
+<%_ if (useRedux === true && useReactRouter === false) { _%>
+import Counter  from './features/counter/counter';
+<%_ } _%>
 <%_ if (useReactRouter === false) { _%>
 import Button from "./components/ui/button";
 <%_ } _%>
@@ -45,6 +48,9 @@ const App = () => {
         </a>
         <Button text="Click Me" onClick={() => alert("Hello 👋")} />
       </header>
+      <%_ } _%>
+      <%_ if (useRedux === true && useReactRouter === false) { _%>
+      <Counter />
       <%_ } _%>
     </div>
   );

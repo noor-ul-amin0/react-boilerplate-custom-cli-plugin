@@ -1,5 +1,8 @@
 import React, { FC } from 'react';
 import Button from '../../components/ui/button';
+<%_ if (useRedux === true) { _%>
+import Counter from "../../features/counter/counter";
+<%_ } _%>
 
 const Home: FC = () => {
 
@@ -26,6 +29,9 @@ return (
       Learn React
     </a>
     <Button text="Click Me" onClick={() => alert("Hello 👋")} />
+    <%_ if (useRedux === true) { _%>
+    <Counter />
+    <%_ } _%>
   </header>
 )
 }
