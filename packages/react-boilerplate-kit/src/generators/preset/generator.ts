@@ -110,7 +110,7 @@ export async function presetGenerator(
     return json;
   });
   await formatFiles(tree);
-  return addDependenciesToPackageJson(
+  addDependenciesToPackageJson(
     tree,
     {
       react: await getLatestVersion('react'),
