@@ -1,12 +1,10 @@
 import React, { FC } from 'react';
-import Button from '../../components/ui/button';
 
 const About: FC = () => {
   return (
     <div>
       <center>
         <h1 style={{ margin: '10px' }}>This is about page</h1>
-        <Button text="Click Me" onClick={() => alert("Hello 👋")} />
       </center>
     </div>
   );
