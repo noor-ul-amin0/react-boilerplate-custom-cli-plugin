@@ -3,4 +3,5 @@ export interface PresetGeneratorSchema {
   uiLibrary: 'mui' | 'antd' | 'none';
   useReactRouter: boolean;
   useRedux: boolean;
+  useStorybook: boolean;
 }
