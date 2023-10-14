@@ -3,7 +3,6 @@ import {
   addProjectConfiguration,
   formatFiles,
   generateFiles,
-  installPackagesTask,
   Tree,
   updateJson,
 } from '@nx/devkit';
@@ -22,18 +21,32 @@ export async function presetGenerator(
   tree: Tree,
   options: PresetGeneratorSchema
 ) {
+  const reactDeps = await Promise.all([
+    getLatestVersion('react'),
+    getLatestVersion('react-dom'),
+    getLatestVersion('react-scripts'),
+  ]);
+  const reactDevDeps = await Promise.all([
+    getLatestVersion('typescript'),
+    getLatestVersion('@types/react'),
+    getLatestVersion('@types/react-dom'),
+  ]);
   const dependencies = {
-    react: await getLatestVersion('react'),
-    'react-dom': await getLatestVersion('react-dom'),
-    'react-scripts': await getLatestVersion('react-scripts'),
+    react: reactDeps.at(0),
+    'react-dom': reactDeps.at(1),
+    'react-scripts': reactDeps.at(2),
   };
   const devDependencies = {
-    typescript: await getLatestVersion('typescript'),
-    '@types/react': await getLatestVersion('@types/react'),
-    '@types/react-dom': await getLatestVersion('@types/react-dom'),
+    typescript: reactDevDeps.at(0),
+    '@types/react': reactDevDeps.at(1),
+    '@types/react-dom': reactDevDeps.at(2),
   };
+
   const projectRoot = `.`;
-  const targetRoot = projectRoot + '/src';
+  const projectSrc = projectRoot + '/src';
+  const projectComponentsPath = projectSrc + '/components';
+  const projectPagesPath = projectSrc + '/pages';
+
   addProjectConfiguration(tree, options.name, {
     root: projectRoot,
     projectType: 'application',
@@ -43,6 +56,74 @@ export async function presetGenerator(
     ...options,
     tmpl: '.template',
   });
+  if (options.uiLibrary === 'antd') {
+    dependencies['antd'] = await getLatestVersion('antd');
+    generateFiles(
+      tree,
+      path.join(__dirname, 'meta_data', 'ui_library_components', 'antd'),
+      projectSrc,
+      options
+    );
+  } else if (options.uiLibrary === 'mui') {
+    const deps = await Promise.all([
+      getLatestVersion('@mui/material'),
+      getLatestVersion('@emotion/react'),
+      getLatestVersion('@emotion/styled'),
+    ]);
+    dependencies['@mui/material'] = deps.at(0);
+    dependencies['@emotion/react'] = deps.at(1);
+    dependencies['@emotion/styled'] = deps.at(2);
+    generateFiles(
+      tree,
+      path.join(__dirname, 'meta_data', 'ui_library_components', 'mui'),
+      projectSrc,
+      options
+    );
+  } else if (options.uiLibrary === 'none') {
+    generateFiles(
+      tree,
+      path.join(__dirname, 'meta_data', 'ui_library_components', 'css'),
+      projectSrc,
+      options
+    );
+  }
+  if (options.reactQuery_swr === 'react-query') {
+    dependencies['@tanstack/react-query'] = await getLatestVersion(
+      '@tanstack/react-query'
+    );
+    if (options.useReactRouter) {
+      generateFiles(
+        tree,
+        path.join(__dirname, 'meta_data', 'react_query_components'),
+        projectPagesPath + '/posts',
+        options
+      );
+    } else {
+      generateFiles(
+        tree,
+        path.join(__dirname, 'meta_data', 'react_query_components'),
+        projectComponentsPath + '/posts',
+        options
+      );
+    }
+  } else if (options.reactQuery_swr === 'swr') {
+    dependencies['swr'] = await getLatestVersion('swr');
+    if (options.useReactRouter) {
+      generateFiles(
+        tree,
+        path.join(__dirname, 'meta_data', 'swr_components'),
+        projectPagesPath + '/posts',
+        options
+      );
+    } else {
+      generateFiles(
+        tree,
+        path.join(__dirname, 'meta_data', 'swr_components'),
+        projectComponentsPath + '/posts',
+        options
+      );
+    }
+  }
   if (options.useReactRouter) {
     dependencies['react-router-dom'] = await getLatestVersion(
       'react-router-dom'
@@ -50,70 +131,81 @@ export async function presetGenerator(
     generateFiles(
       tree,
       path.join(__dirname, 'meta_data', 'router_components'),
-      targetRoot,
+      projectSrc,
+      options
+    );
+    generateFiles(
+      tree,
+      path.join(__dirname, 'meta_data', 'ui_library_components', 'navbar'),
+      projectSrc + '/components/navbar',
       options
     );
   }
-  if (options.useRedux) {
-    dependencies['react-redux'] = await getLatestVersion('react-redux');
-    dependencies['@reduxjs/toolkit'] = await getLatestVersion(
-      '@reduxjs/toolkit'
-    );
+  if (options.stateManagement === 'redux') {
+    const deps = await Promise.all([
+      getLatestVersion('react-redux'),
+      getLatestVersion('@reduxjs/toolkit'),
+    ]);
+    dependencies['react-redux'] = deps.at(0);
+    dependencies['@reduxjs/toolkit'] = deps.at(1);
     generateFiles(
       tree,
       path.join(__dirname, 'meta_data', 'redux_components'),
-      targetRoot,
+      projectSrc,
+      options
+    );
+  } else if (options.stateManagement === 'jotai') {
+    dependencies['jotai'] = await getLatestVersion('jotai');
+    generateFiles(
+      tree,
+      path.join(__dirname, 'meta_data', 'jotai_components'),
+      projectSrc,
       options
     );
   }
+
   if (options.useStorybook) {
-    dependencies['@storybook/addon-essentials'] = await getLatestVersion(
-      '@storybook/addon-essentials'
-    );
-    dependencies['@storybook/addon-interactions'] = await getLatestVersion(
-      '@storybook/addon-interactions'
-    );
-    dependencies['@storybook/addon-links'] = await getLatestVersion(
-      '@storybook/addon-links'
-    );
-    dependencies['@storybook/addon-onboarding'] = await getLatestVersion(
-      '@storybook/addon-onboarding'
-    );
-    dependencies['@storybook/blocks'] = await getLatestVersion(
-      '@storybook/blocks'
-    );
-    dependencies['@storybook/preset-create-react-app'] = await getLatestVersion(
-      '@storybook/preset-create-react-app'
-    );
-    dependencies['@storybook/react'] = await getLatestVersion(
-      '@storybook/react'
-    );
-    dependencies['@storybook/react-webpack5'] = await getLatestVersion(
-      '@storybook/react-webpack5'
-    );
-    dependencies['@storybook/testing-library'] = await getLatestVersion(
-      '@storybook/testing-library'
-    );
-    dependencies['babel-plugin-named-exports-order'] = await getLatestVersion(
-      'babel-plugin-named-exports-order'
-    );
-    dependencies['eslint-plugin-storybook'] = await getLatestVersion(
-      'eslint-plugin-storybook'
-    );
-    dependencies['prop-types'] = await getLatestVersion('prop-types');
-    dependencies['storybook'] = await getLatestVersion('storybook');
-    dependencies['webpack'] = await getLatestVersion('webpack');
+    const devDeps = await Promise.all([
+      getLatestVersion('@storybook/addon-essentials'),
+      getLatestVersion('@storybook/addon-interactions'),
+      getLatestVersion('@storybook/addon-links'),
+      getLatestVersion('@storybook/addon-onboarding'),
+      getLatestVersion('@storybook/blocks'),
+      getLatestVersion('@storybook/preset-create-react-app'),
+      getLatestVersion('@storybook/react'),
+      getLatestVersion('@storybook/react-webpack5'),
+      getLatestVersion('@storybook/testing-library'),
+      getLatestVersion('babel-plugin-named-exports-order'),
+      getLatestVersion('eslint-plugin-storybook'),
+      getLatestVersion('prop-types'),
+      getLatestVersion('storybook'),
+      getLatestVersion('webpack'),
+    ]);
+    devDependencies['@storybook/addon-essentials'] = devDeps.at(0);
+    devDependencies['@storybook/addon-interactions'] = devDeps.at(1);
+    devDependencies['@storybook/addon-links'] = devDeps.at(2);
+    devDependencies['@storybook/addon-onboarding'] = devDeps.at(3);
+    devDependencies['@storybook/blocks'] = devDeps.at(4);
+    devDependencies['@storybook/preset-create-react-app'] = devDeps.at(5);
+    devDependencies['@storybook/react'] = devDeps.at(6);
+    devDependencies['@storybook/react-webpack5'] = devDeps.at(7);
+    devDependencies['@storybook/testing-library'] = devDeps.at(8);
+    devDependencies['babel-plugin-named-exports-order'] = devDeps.at(9);
+    devDependencies['eslint-plugin-storybook'] = devDeps.at(10);
+    devDependencies['prop-types'] = devDeps.at(11);
+    devDependencies['storybook'] = devDeps.at(12);
+    devDependencies['webpack'] = devDeps.at(13);
 
     generateFiles(
       tree,
-      path.join(__dirname, 'meta_data', 'storybook_components', '_storybook'),
-      projectRoot,
+      path.join(__dirname, 'meta_data', 'storybook_components', '.storybook'),
+      projectRoot + '/.storybook',
       options
     );
     generateFiles(
       tree,
-      path.join(__dirname, 'meta_data', 'storybook_components', '_stories'),
-      targetRoot,
+      path.join(__dirname, 'meta_data', 'storybook_components', 'stories'),
+      projectSrc + '/stories',
       options
     );
     updateJson(tree, 'package.json', (json) => {
@@ -122,32 +214,6 @@ export async function presetGenerator(
       json.scripts['build-storybook'] = 'storybook build';
       return json;
     });
-  }
-  if (options.uiLibrary === 'antd') {
-    dependencies['antd'] = await getLatestVersion('antd');
-    generateFiles(
-      tree,
-      path.join(__dirname, 'meta_data', 'ui_library_components', 'antd'),
-      targetRoot,
-      options
-    );
-  } else if (options.uiLibrary === 'mui') {
-    dependencies['@mui/material'] = await getLatestVersion('@mui/material');
-    dependencies['@emotion/react'] = await getLatestVersion('@emotion/react');
-    dependencies['@emotion/styled'] = await getLatestVersion('@emotion/styled');
-    generateFiles(
-      tree,
-      path.join(__dirname, 'meta_data', 'ui_library_components', 'mui'),
-      targetRoot,
-      options
-    );
-  } else {
-    generateFiles(
-      tree,
-      path.join(__dirname, 'meta_data', 'ui_library_components', 'css'),
-      targetRoot,
-      options
-    );
   }
   updateJson(tree, 'package.json', (json) => {
     json.scripts = json.scripts || {};
@@ -158,10 +224,9 @@ export async function presetGenerator(
     return json;
   });
   await formatFiles(tree);
-  addDependenciesToPackageJson(tree, dependencies, devDependencies);
-  return () => {
-    installPackagesTask(tree);
-  };
+  console.log('🚀 ~ file: generator.ts:228 ~ tree.root:', tree.children('src'));
+  return;
+  // return addDependenciesToPackageJson(tree, dependencies, devDependencies);
 }
 
 export default presetGenerator;

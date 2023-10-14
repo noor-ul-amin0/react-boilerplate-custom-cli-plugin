@@ -5,13 +5,28 @@ import Home from './pages/home';
 import About from './pages/about';
 import RootLayout from './layouts/root';
 <%_ } _%>
-<%_ if (useRedux === true && useReactRouter === false) { _%>
+<%_ if (stateManagement === 'redux' || stateManagement === 'jotai'  && useReactRouter === false) { _%>
 import Counter  from './features/counter/counter';
 <%_ } _%>
 <%_ if (useReactRouter === false) { _%>
 import Button from "./components/ui/button";
 <%_ } _%>
+<%_ if (reactQuery_swr !== 'none') { _%>
+<%_ if (useReactRouter === true) { _%>
+import Posts from "./pages/posts";
+<%_ } _%>
+<%_ } _%>
 import "./App.css";
+
+<%_ if (useReactRouter === false) { _%>
+let buttonText = 'Click';
+<%_ if (uiLibrary === 'mui') { _%>
+buttonText = 'MUI button';
+<%_ } _%>
+<%_ if (uiLibrary === 'antd') { _%>
+buttonText = 'Ant Design button';
+<%_ } _%>
+<%_ } _%>
 
 const App = () => {
 
@@ -22,6 +37,9 @@ const App = () => {
           <Route element={ <RootLayout/> }>
            <Route  path='/' element={ <Home/> } />
            <Route  path='/about' element={ <About/> } />
+           <%_ if (reactQuery_swr !== 'none') { _%>
+           <Route  path='/posts' element={ <Posts/> } />
+           <%_ } _%>
           </Route>
       </Routes>
       <%_ } else { _%>
@@ -37,20 +55,12 @@ const App = () => {
             <path d="M520.5 78.1z" />
           </g>
         </svg>
-        <p>Welcome To React!</p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <Button text="Click Me" onClick={() => alert("Hello 👋")} />
-      </header>
-      <%_ } _%>
-      <%_ if (useRedux === true && useReactRouter === false) { _%>
+        <p>Welcome To React Boilerplate!</p>
+        <Button text={buttonText} onClick={() => alert("Hello 👋")} />
+      <%_ if (stateManagement === 'redux' || stateManagement === 'jotai'  && useReactRouter === false) { _%>
       <Counter />
+      <%_ } _%>
+      </header>
       <%_ } _%>
     </div>
   );

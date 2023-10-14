@@ -33,6 +33,25 @@ async function main() {
       ).uiLibrary;
     }
 
+    let reactQuery_swr = process.argv[6];
+    if (!reactQuery_swr) {
+      reactQuery_swr = (
+        await prompt<{
+          reactQuery_swr: 'react-query' | 'swr' | 'none';
+        }>({
+          name: 'reactQuery_swr',
+          message: 'Which data fetching library do you want to use?',
+          initial: 'none' as any,
+          type: 'autocomplete',
+          choices: [
+            { name: 'react-query', message: 'React Query' },
+            { name: 'swr', message: 'SWR' },
+            { name: 'none', message: 'None' },
+          ],
+        })
+      ).reactQuery_swr;
+    }
+
     const router = process.argv[4];
     let useReactRouter = true;
     if (!router) {
@@ -47,20 +66,24 @@ async function main() {
       ).useReactRouter;
     }
 
-    const redux = process.argv[5];
-    let useRedux = true;
-    if (!redux) {
-      useRedux = (
-        await prompt<{ useRedux: boolean }>({
-          type: 'confirm',
-          name: 'useRedux',
-          message: 'Do you want to add Redux to your project? (Y/n)',
-          initial: true,
+    let stateManagement = process.argv[5];
+    if (!stateManagement) {
+      stateManagement = (
+        await prompt<{ stateManagement: 'redux' | 'jotai' | 'none' }>({
+          name: 'stateManagement',
+          message: 'Which state management library do you want to use?',
+          initial: 'none' as any,
+          type: 'autocomplete',
+          choices: [
+            { name: 'redux', message: 'Redux' },
+            { name: 'jotai', message: 'Jotai' },
+            { name: 'none', message: 'None' },
+          ],
         })
-      ).useRedux;
+      ).stateManagement;
     }
 
-    const storybook = process.argv[6];
+    const storybook = process.argv[7];
     let useStorybook = true;
     if (!storybook) {
       useStorybook = (
@@ -68,7 +91,7 @@ async function main() {
           type: 'confirm',
           name: 'useStorybook',
           message: 'Do you want to add Storybook to your project? (Y/n)',
-          initial: true,
+          initial: false,
         })
       ).useStorybook;
     }
@@ -87,8 +110,9 @@ async function main() {
         nxCloud: false,
         packageManager: 'npm',
         uiLibrary,
+        reactQuery_swr,
         useReactRouter,
-        useRedux,
+        stateManagement,
         useStorybook,
       }
     );

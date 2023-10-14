@@ -1,9 +1,17 @@
 import React, { FC } from 'react';
 import Button from '../../components/ui/button';
-<%_ if (useRedux === true) { _%>
+<%_ if (stateManagement === 'redux' || stateManagement === 'jotai') { _%>
 import Counter from "../../features/counter/counter";
 <%_ } _%>
 
+  let buttonText = 'Click';
+  <%_ if (uiLibrary === 'mui') { _%>
+    buttonText = 'MUI button';
+  <%_ } _%>
+  <%_ if (uiLibrary === 'antd') { _%>
+    buttonText = 'Ant Design button';
+  <%_ } _%>
+  
 const Home: FC = () => {
 
 return (
@@ -20,16 +28,8 @@ return (
       </g>
     </svg>
     <p>Welcome To React!</p>
-    <a
-      className="App-link"
-      href="https://reactjs.org"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Learn React
-    </a>
-    <Button text="Click Me" onClick={() => alert("Hello 👋")} />
-    <%_ if (useRedux === true) { _%>
+    <Button text={buttonText} onClick={() => alert("Hello 👋")} />
+    <%_ if (stateManagement === 'redux' || stateManagement === 'jotai') { _%>
     <Counter />
     <%_ } _%>
   </header>
